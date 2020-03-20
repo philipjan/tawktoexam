@@ -28,6 +28,10 @@ android {
         enabled = true
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -43,8 +47,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
 
     // rxjava, retrofit, gson converter
-    implementation 'io.reactivex.rxjava3:rxjava:3.0.1'
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'com.squareup.retrofit2:retrofit:2.7.2'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.7.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.2'
@@ -60,4 +64,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
+    
+    // fragment container
+    implementation 'androidx.fragment:fragment-ktx:1.2.3'
+
+    // swiperefresh
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 }
