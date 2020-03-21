@@ -3,7 +3,10 @@ package com.coding.tawktoexam.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.coding.tawktoexam.adapter.UserAdapter
+import com.coding.tawktoexam.entity.Note
 import com.coding.tawktoexam.entity.UserEntity
+import com.coding.tawktoexam.utility.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -13,31 +16,37 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     private val disposable = CompositeDisposable()
     private var startIndexId = 0
     private val TAG = "MainActivityViewModel"
+    private val adapter = UserAdapter()
 
     private val usersLiveData = MutableLiveData<List<UserEntity>>()
+    private val loadingIndicatorLiveData = MutableLiveData<Int>()
 
     init {
         getUserListDb()
     }
 
+    fun getAdapter() = adapter
     fun getUsersLiveData() = usersLiveData
+    fun getIndicatorStatus() = loadingIndicatorLiveData
 
     // TODO: 20/03/2020 add some backoff multiplier for Retry
     fun getUsers() {
+        Log.d(TAG, "CURRENT INDEX: ${getLastIndex()}")
         disposable.add(
-            service.getUsers(startIndexId.toString())
+            service.getUsers(getLastIndex().toString())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {  }
-                .doOnTerminate {  }
+                .doOnSubscribe { loadingIndicatorLiveData.value = Utils.LOADING }
+                .doOnTerminate { loadingIndicatorLiveData.value = Utils.DONE }
                 .subscribe(
                     {
                         Log.d(TAG, "$it")
-                        // get the last index
-                        startIndexId = it.lastOrNull()?.id ?: 0
+                        saveLastIndex(it.last().id)
+                        Log.d(TAG, "New Index: ${it.last().id}")
                         insertData(it)
                     },
                     {
+                        loadingIndicatorLiveData.value = Utils.ERROR
                         Log.e(TAG, "Throwable: $it")
                     }
                 )
@@ -91,6 +100,23 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                     },
                     { error ->
                         Log.e(TAG, "getUserListDb -> $error")
+                    }
+                )
+        )
+    }
+
+    // TODO: 21/03/2020 testing function if can add NOTE in DB
+    fun addSampleNote() {
+        disposable.add(
+            db.noteDao().insertNote(Note(1, "Sample Note 123"))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        Log.d(TAG, "addSampleNote DONE")
+                    },
+                    { error ->
+                        Log.e(TAG, "addSampleNote -> $error")
                     }
                 )
         )

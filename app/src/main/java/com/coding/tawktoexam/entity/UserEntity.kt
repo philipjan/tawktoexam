@@ -131,5 +131,8 @@ data class UserEntity(
 
     @SerializedName("updated_at")
     @ColumnInfo(name = "updated_at", defaultValue = "")
-    val updatedAt: String
+    val updatedAt: String,
+
+    @ColumnInfo(name = "note", defaultValue = "")
+    val offLineNote: String
 )
