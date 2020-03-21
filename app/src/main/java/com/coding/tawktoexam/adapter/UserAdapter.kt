@@ -14,19 +14,25 @@ import kotlinx.android.synthetic.main.item_user.view.*
 class UserAdapter: ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserEntityUtil()) {
 
     private var userList = mutableListOf<UserEntity>()
+    private var clickListener = { selected: UserEntity -> Unit}
 
-    inner class UserViewHolder(val view: View): RecyclerView.ViewHolder(view.rootView) {
+    inner class UserViewHolder(val view: View): RecyclerView.ViewHolder(view.rootView), View.OnClickListener {
         val profileImage = view.profileImage
         val userName = view.userName
         val userNote = view.userNote
 
         fun bind(user: UserEntity) {
+            view.setOnClickListener(this)
             Picasso.get().load(user.avatarUrl)
                 .error(R.drawable.ic_user_head)
                 .resize(50, 50)
                 .into(profileImage)
             userName.text = user.login
             userNote.text = user.offLineNote
+        }
+
+        override fun onClick(v: View?) {
+            clickListener.invoke(userList[layoutPosition])
         }
     }
 
@@ -40,6 +46,10 @@ class UserAdapter: ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserEntit
 
     override fun getItemCount(): Int {
         return userList.size
+    }
+
+    fun setClickListener(listener: (UserEntity) -> Unit) {
+        this.clickListener = listener
     }
 
     fun updateList(items: MutableList<UserEntity>) {

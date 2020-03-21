@@ -68,6 +68,10 @@ class MainActivity : BaseActivity() {
             LOG(MainActivity::class.java, "Last Item Triggered!")
             viewModel.getUsers()
         }
+
+        viewModel.getAdapter().setClickListener {
+            showToast("Selected: ${it.login}")
+        }
     }
 
     private fun setRefreshing(isRefreshing: Boolean) {
