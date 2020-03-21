@@ -1,14 +1,18 @@
 package com.coding.tawktoexam.viewmodel
 
+import android.app.Application
 import android.util.Log
+import com.coding.tawktoexam.entity.UserEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class MainActivityViewModel : BaseViewModel() {
+class MainActivityViewModel(application: Application) : BaseViewModel(application) {
+
     private val disposable = CompositeDisposable()
     private var startIndexId = 0
     private val TAG = "MainActivityViewModel"
+
 
     // TODO: 20/03/2020 add some backoff multiplier for Retry
     fun getUsers() {
@@ -24,6 +28,7 @@ class MainActivityViewModel : BaseViewModel() {
                         startIndexId = it.lastOrNull()?.id ?: 0
                         Log.d(TAG, "Last Index: $startIndexId")
                         // TODO: 20/03/2020 do some database insert stuff
+                        insertData(it)
                     },
                     {
                         Log.e(TAG, "Throwable: $it")
@@ -46,6 +51,22 @@ class MainActivityViewModel : BaseViewModel() {
                     },
                     {
                         Log.e(TAG, "Throwable: $it")
+                    }
+                )
+        )
+    }
+
+    private fun insertData(users: List<UserEntity>) {
+        disposable.add(
+            db.userDao().insert(users)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        Log.d(TAG, "INSERT COMPLETE!")
+                    },
+                    { error ->
+                        Log.e(TAG, "ERROR WHILE INSERTING DATA! $error")
                     }
                 )
         )

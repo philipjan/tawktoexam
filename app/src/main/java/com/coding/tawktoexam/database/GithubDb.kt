@@ -4,13 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.coding.tawktoexam.dao.NoteDao
 import com.coding.tawktoexam.dao.UserDao
+import com.coding.tawktoexam.entity.Note
 import com.coding.tawktoexam.entity.UserEntity
 
-@Database(entities = [UserEntity::class], version = 1, exportSchema = false)
+@Database(entities = [UserEntity::class, Note::class], version = 1, exportSchema = false)
 abstract class GithubDb : RoomDatabase() {
 
     abstract fun userDao(): UserDao
+    abstract fun noteDao(): NoteDao
 
     companion object {
 

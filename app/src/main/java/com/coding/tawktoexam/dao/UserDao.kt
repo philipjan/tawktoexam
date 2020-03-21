@@ -10,8 +10,8 @@ import io.reactivex.Flowable
  */
 @Dao
 interface UserDao {
-    @Insert
-    fun insert(user: UserEntity): Completable
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(users: List<UserEntity>): Completable
 
     @Query("SELECT * FROM tbl_user")
     fun getAllUser(): Flowable<List<UserEntity>>
@@ -19,10 +19,10 @@ interface UserDao {
     @Query("SELECT * FROM tbl_user WHERE tbl_user.login_name LIKE :searchString")
     fun searchUsers(searchString: String): Flowable<List<UserEntity>>
 
-    @Query("SELECT * FROM tbl_user WHERE tbl_user.id LIKE :id")
+    @Query("SELECT * FROM tbl_user WHERE tbl_user.id = :id")
     fun searchUser(id: Int): Flowable<UserEntity>
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateUser(user: UserEntity): Completable
 
     @Delete
