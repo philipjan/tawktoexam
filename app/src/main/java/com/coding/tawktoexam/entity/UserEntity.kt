@@ -79,5 +79,57 @@ data class UserEntity(
 
     @SerializedName("site_admin")
     @ColumnInfo(name = "site_admin")
-    val isSiteAdmin: Boolean
+    val isSiteAdmin: Boolean,
+
+    @SerializedName("name")
+    @ColumnInfo(name = "name", defaultValue = "")
+    val fullName: String,
+
+    @SerializedName("company")
+    @ColumnInfo(name = "company", defaultValue = "")
+    val company: String,
+
+    @SerializedName("blog")
+    @ColumnInfo(name = "blog", defaultValue = "")
+    val blog: String,
+
+    @SerializedName("location")
+    @ColumnInfo(name = "location", defaultValue = "")
+    val location: String,
+
+    @SerializedName("email")
+    @ColumnInfo(name = "email", defaultValue = "")
+    val email: String,
+
+    @SerializedName("hireable")
+    @ColumnInfo(name = "hireable", defaultValue = "")
+    val hirable: String,
+
+    @SerializedName("bio")
+    @ColumnInfo(name = "bio", defaultValue = "")
+    val bio: String,
+
+    @SerializedName("public_repos")
+    @ColumnInfo(name = "public_repos", defaultValue = "0")
+    val publicRepo: Int,
+
+    @SerializedName("public_gists")
+    @ColumnInfo(name = "public_gists", defaultValue = "0")
+    val publicGist: Int,
+
+    @SerializedName("followers")
+    @ColumnInfo(name = "followers", defaultValue = "0")
+    val followers: Int,
+
+    @SerializedName("following")
+    @ColumnInfo(name = "following", defaultValue = "0")
+    val following: Int,
+
+    @SerializedName("created_at")
+    @ColumnInfo(name = "created_at", defaultValue = "")
+    val createdAt: String,
+
+    @SerializedName("updated_at")
+    @ColumnInfo(name = "updated_at", defaultValue = "")
+    val updatedAt: String
 )

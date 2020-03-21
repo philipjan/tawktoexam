@@ -16,5 +16,5 @@ interface Endpoint {
     fun getNextData(@Url url: String): Observable<List<UserEntity>>
 
     @GET("/users/{userName}")
-    fun getUserInfo(@Path("userName") userName: String) // TODO: 21/03/2020 add data class
+    fun getUserInfo(@Path("userName") userName: String): Observable<UserEntity>
 }

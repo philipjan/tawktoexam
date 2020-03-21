@@ -1,15 +1,15 @@
 package com.coding.tawktoexam.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.coding.tawktoexam.R
 import com.coding.tawktoexam.databinding.ActivityMainBinding
 import com.coding.tawktoexam.viewmodel.AppViewModelFactory
 import com.coding.tawktoexam.viewmodel.MainActivityViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var vmFactory: AppViewModelFactory
@@ -21,10 +21,17 @@ class MainActivity : AppCompatActivity() {
         binder = DataBindingUtil.setContentView(this, R.layout.activity_main)
         vmFactory = AppViewModelFactory(application)
         viewModel = ViewModelProvider(this, vmFactory).get(MainActivityViewModel::class.java)
+        initializeUserLiveData()
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getUsers()
+    private fun initializeUserLiveData() {
+        viewModel.getUsersLiveData().observe(this, Observer {
+            userList ->
+            showToast("Size: ${userList.size}")
+            if (userList.isNullOrEmpty()) {
+                viewModel.getUsers()
+                showToast("Getting Users")
+            }
+        })
     }
 }

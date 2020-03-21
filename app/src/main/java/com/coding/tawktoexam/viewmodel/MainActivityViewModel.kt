@@ -2,6 +2,7 @@ package com.coding.tawktoexam.viewmodel
 
 import android.app.Application
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.coding.tawktoexam.entity.UserEntity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -13,6 +14,13 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     private var startIndexId = 0
     private val TAG = "MainActivityViewModel"
 
+    private val usersLiveData = MutableLiveData<List<UserEntity>>()
+
+    init {
+        getUserListDb()
+    }
+
+    fun getUsersLiveData() = usersLiveData
 
     // TODO: 20/03/2020 add some backoff multiplier for Retry
     fun getUsers() {
@@ -25,9 +33,8 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                 .subscribe(
                     {
                         Log.d(TAG, "$it")
+                        // get the last index
                         startIndexId = it.lastOrNull()?.id ?: 0
-                        Log.d(TAG, "Last Index: $startIndexId")
-                        // TODO: 20/03/2020 do some database insert stuff
                         insertData(it)
                     },
                     {
@@ -67,6 +74,23 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                     },
                     { error ->
                         Log.e(TAG, "ERROR WHILE INSERTING DATA! $error")
+                    }
+                )
+        )
+    }
+
+    private fun getUserListDb() {
+        disposable.add(
+            db.userDao().getAllUser()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { userList ->
+                      Log.d(TAG, "DB USER SIZE: ${userList.size}")
+                        usersLiveData.value = userList
+                    },
+                    { error ->
+                        Log.e(TAG, "getUserListDb -> $error")
                     }
                 )
         )
