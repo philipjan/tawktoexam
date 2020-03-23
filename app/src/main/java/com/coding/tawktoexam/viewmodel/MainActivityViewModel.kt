@@ -4,9 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.coding.tawktoexam.adapter.UserAdapter
-import com.coding.tawktoexam.entity.Note
 import com.coding.tawktoexam.entity.UserEntity
 import com.coding.tawktoexam.utility.Utils
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -14,13 +14,11 @@ import io.reactivex.schedulers.Schedulers
 class MainActivityViewModel(application: Application) : BaseViewModel(application) {
 
     private val disposable = CompositeDisposable()
-    private var startIndexId = 0
     private val TAG = "MainActivityViewModel"
     private val adapter = UserAdapter()
 
     private val usersLiveData = MutableLiveData<List<UserEntity>>()
     private val loadingIndicatorLiveData = MutableLiveData<Int>()
-    private val currentSelectedUser = MutableLiveData<UserEntity>()
 
     init {
         getUserListDb()
@@ -29,13 +27,19 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     fun getAdapter() = adapter
     fun getUsersLiveData() = usersLiveData
     fun getIndicatorStatus() = loadingIndicatorLiveData
-    fun getSelectedUser() = currentSelectedUser
 
     // TODO: 20/03/2020 add some backoff multiplier for Retry
     fun getUsers() {
         Log.d(TAG, "CURRENT INDEX: ${getLastIndex()}")
         disposable.add(
             service.getUsers(getLastIndex().toString())
+                .flatMap {
+                    Observable.fromIterable(it)
+                }
+                .flatMap {
+                    getFullUserInfo(it)
+                }
+                .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { loadingIndicatorLiveData.value = Utils.LOADING }
@@ -55,23 +59,13 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
         )
     }
 
-    fun getNextUrl(url: String) {
-        disposable.add(
-            service.getNextData("https://api.github.com/users?since=46")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {  }
-                .doOnTerminate {  }
-                .subscribe(
-                    {
-                        Log.d(TAG, "$it")
-                        // TODO: 20/03/2020 do some database insert stuff
-                    },
-                    {
-                        Log.e(TAG, "Throwable: $it")
-                    }
-                )
-        )
+    private fun getFullUserInfo(username: UserEntity): Observable<UserEntity> {
+        return service.getUserInfo(username.login)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map {
+                it
+            }
     }
 
     private fun insertData(users: List<UserEntity>) {
@@ -105,27 +99,6 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                     }
                 )
         )
-    }
-
-    // TODO: 21/03/2020 testing function if can add NOTE in DB
-    fun addSampleNote() {
-        disposable.add(
-            db.noteDao().insertNote(Note(1, "Sample Note 123"))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        Log.d(TAG, "addSampleNote DONE")
-                    },
-                    { error ->
-                        Log.e(TAG, "addSampleNote -> $error")
-                    }
-                )
-        )
-    }
-
-    fun setUser(user: UserEntity) {
-        currentSelectedUser.value = user
     }
 
     override fun onCleared() {

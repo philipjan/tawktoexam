@@ -36,7 +36,6 @@ class MainActivity : BaseActivity() {
         viewModel.getUsersLiveData().observe(this, Observer {
             userList ->
             viewModel.getAdapter().updateList(userList.toMutableList())
-            viewModel.addSampleNote()
             if (userList.isNullOrEmpty()) {
                 viewModel.getUsers()
             }
@@ -70,7 +69,6 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.getAdapter().setClickListener {
-            viewModel.setUser(it)
             gotoProfile(it)
         }
     }
