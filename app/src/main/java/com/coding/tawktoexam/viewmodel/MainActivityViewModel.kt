@@ -20,6 +20,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
 
     private val usersLiveData = MutableLiveData<List<UserEntity>>()
     private val loadingIndicatorLiveData = MutableLiveData<Int>()
+    private val currentSelectedUser = MutableLiveData<UserEntity>()
 
     init {
         getUserListDb()
@@ -28,6 +29,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     fun getAdapter() = adapter
     fun getUsersLiveData() = usersLiveData
     fun getIndicatorStatus() = loadingIndicatorLiveData
+    fun getSelectedUser() = currentSelectedUser
 
     // TODO: 20/03/2020 add some backoff multiplier for Retry
     fun getUsers() {
@@ -120,6 +122,10 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                     }
                 )
         )
+    }
+
+    fun setUser(user: UserEntity) {
+        currentSelectedUser.value = user
     }
 
     override fun onCleared() {

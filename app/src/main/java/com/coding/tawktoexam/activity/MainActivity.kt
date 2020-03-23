@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.coding.tawktoexam.R
 import com.coding.tawktoexam.databinding.ActivityMainBinding
+import com.coding.tawktoexam.entity.UserEntity
+import com.coding.tawktoexam.fragment.ProfileFragment
 import com.coding.tawktoexam.utility.Utils
 import com.coding.tawktoexam.utility.lastItemListener
 import com.coding.tawktoexam.viewmodel.AppViewModelFactory
@@ -70,11 +72,20 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.getAdapter().setClickListener {
-            showToast("Selected: ${it.login}")
+//            showToast("Selected: ${it.login}")
+            viewModel.setUser(it)
+            gotoProfile(it)
         }
     }
 
     private fun setRefreshing(isRefreshing: Boolean) {
         binder.swipeRefreshLayout.isRefreshing = isRefreshing
+    }
+
+    private fun gotoProfile(user: UserEntity) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, ProfileFragment.getInstance(user.login))
+            .addToBackStack("profile")
+            .commit()
     }
 }

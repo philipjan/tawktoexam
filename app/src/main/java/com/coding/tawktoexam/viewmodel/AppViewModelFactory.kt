@@ -8,8 +8,11 @@ class AppViewModelFactory (val app: Application): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
            return MainActivityViewModel(app) as T
+        } else if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
+            return ProfileViewModel(app) as T
         } else {
             throw IllegalArgumentException("ViewModel Not Found")
         }
+
     }
 }
