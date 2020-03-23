@@ -22,6 +22,18 @@ fun avatarProfile(view: ImageView, avatarUrl: MutableLiveData<String>?) {
     }
 }
 
+@BindingAdapter("iconInteger")
+fun setIconInteger(view: ImageView, icon: MutableLiveData<Int>) {
+    val parentActivity: AppCompatActivity? = view.getParentActivity()
+    if (parentActivity != null && icon != null) {
+        icon.observe(parentActivity, Observer {
+            Picasso.get()
+                .load(it)
+                .into(view)
+        })
+    }
+}
+
 
 @BindingAdapter("profileResized")
 fun avatarProfileResized(view: ImageView, avatarUrl: MutableLiveData<String>?) {

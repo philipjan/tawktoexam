@@ -2,6 +2,7 @@ package com.coding.tawktoexam.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.coding.tawktoexam.R
 import com.coding.tawktoexam.entity.UserEntity
 
 class ProfileBindingViewModel: ViewModel() {
@@ -14,6 +15,7 @@ class ProfileBindingViewModel: ViewModel() {
     private val company = MutableLiveData<String>()
     private val blogUrl = MutableLiveData<String>()
     private val offlineNote = MutableLiveData<String>()
+    private val noteIcon = MutableLiveData<Int>()
 
 
     fun bind(userEntity: UserEntity) {
@@ -25,6 +27,7 @@ class ProfileBindingViewModel: ViewModel() {
         company.value = "Company: ${userEntity.company}"
         blogUrl.value = "Blog: ${userEntity.blog}"
         offlineNote.value = userEntity.offLineNote
+        noteIcon.value = if (userEntity.offLineNote.isBlank()) -1 else R.drawable.ic_note
     }
 
     fun username() = username
@@ -35,4 +38,5 @@ class ProfileBindingViewModel: ViewModel() {
     fun company() = company
     fun blogUrl() = blogUrl
     fun offlineNote() = offlineNote
+    fun noteIcon() = noteIcon
 }
