@@ -1,6 +1,5 @@
 package com.coding.tawktoexam.viewmodel
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.coding.tawktoexam.entity.UserEntity
@@ -10,7 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.koin.core.get
 
-class ProfileViewModel(app: Application) : BaseViewModel(app) {
+class ProfileViewModel : BaseViewModel() {
 
     private val TAG = "ProfileViewModel"
 

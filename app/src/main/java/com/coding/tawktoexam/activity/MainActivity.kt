@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -14,21 +13,18 @@ import com.coding.tawktoexam.entity.UserEntity
 import com.coding.tawktoexam.fragment.ProfileFragment
 import com.coding.tawktoexam.utility.Utils
 import com.coding.tawktoexam.utility.lastItemListener
-import com.coding.tawktoexam.viewmodel.AppViewModelFactory
 import com.coding.tawktoexam.viewmodel.MainActivityViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.OnCloseListener, SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var viewModel: MainActivityViewModel
-    private lateinit var vmFactory: AppViewModelFactory
-
     private lateinit var binder: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binder = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        vmFactory = AppViewModelFactory(application)
-        viewModel = ViewModelProvider(this, vmFactory).get(MainActivityViewModel::class.java)
+        viewModel = getViewModel()
         binder.searchView.setOnQueryTextListener(this)
         binder.searchView.setOnCloseListener(this)
         binder.swipeRefreshLayout.setOnRefreshListener(this)

@@ -7,23 +7,20 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.coding.tawktoexam.R
-import com.coding.tawktoexam.activity.MainActivity
 import com.coding.tawktoexam.databinding.FragmentProfileBinding
 import com.coding.tawktoexam.entity.UserEntity
 import com.coding.tawktoexam.utility.Utils
-import com.coding.tawktoexam.viewmodel.AppViewModelFactory
 import com.coding.tawktoexam.viewmodel.ProfileBindingViewModel
 import com.coding.tawktoexam.viewmodel.ProfileViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
 class ProfileFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private lateinit var vmFactory: AppViewModelFactory
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var profileBindingViewModel: ProfileBindingViewModel
     private var username: String? = null
@@ -50,8 +47,7 @@ class ProfileFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     ): View? {
         // Inflate the layout for this fragment
         profileBinder = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false )
-        vmFactory = AppViewModelFactory((activity as MainActivity).application)
-        profileViewModel = ViewModelProvider(this, vmFactory).get(ProfileViewModel::class.java)
+        profileViewModel = getViewModel()
         profileBindingViewModel = ProfileBindingViewModel()
         return profileBinder.root
     }
