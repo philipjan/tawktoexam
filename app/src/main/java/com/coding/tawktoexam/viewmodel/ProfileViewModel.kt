@@ -22,7 +22,7 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
 
     private fun getFullUserInfo(username: String) {
         disposable.add(
-            service.getUserInfo(username.toString())
+            service.getUserInfo(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { LOADING_INDICATOR.value = Utils.LOADING }
