@@ -135,7 +135,7 @@ data class UserEntity(
     val updatedAt: String,
 
     @ColumnInfo(name = "note", defaultValue = "")
-    val offLineNote: String
+    var offLineNote: String
 ): Serializable {
     fun alreadyHaveFullProfile(): Boolean {
         return fullName != null && fullName.isNotBlank()

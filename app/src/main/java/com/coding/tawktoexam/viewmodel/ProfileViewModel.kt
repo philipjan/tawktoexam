@@ -15,6 +15,10 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
     private val TAG = "ProfileViewModel"
 
     private val LOADING_INDICATOR = MutableLiveData<Int>()
+    private val userFullData = MutableLiveData<UserEntity>()
+
+    fun getUserData() = userFullData
+    fun getLoadingStatus() = LOADING_INDICATOR
 
     private fun getFullUserInfo(username: String) {
         disposable.add(
@@ -42,11 +46,12 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { LOADING_INDICATOR.value = Utils.LOADING }
-                .doOnTerminate { LOADING_INDICATOR.value = Utils.DONE }
                 .subscribe(
                     {
                         if (it.alreadyHaveFullProfile()) {
                             Log.d(TAG, "getUser ${it.fullName}")
+                            LOADING_INDICATOR.value = Utils.DONE
+                            userFullData.value = it
                         } else {
                             getFullUserInfo(username)
                         }
@@ -59,7 +64,7 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
         )
     }
 
-    private fun updateCurrentProfile(user: UserEntity) {
+     fun updateCurrentProfile(user: UserEntity) {
         disposable.add(
             db.userDao().updateUser(user)
                 .subscribeOn(Schedulers.io())
