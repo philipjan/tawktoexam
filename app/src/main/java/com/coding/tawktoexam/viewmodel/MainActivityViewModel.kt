@@ -79,9 +79,11 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
+                        loadingIndicatorLiveData.value = Utils.DONE
                         Log.d(TAG, "INSERT COMPLETE!")
                     },
                     { error ->
+                        loadingIndicatorLiveData.value = Utils.ERROR
                         Log.e(TAG, "ERROR WHILE INSERTING DATA! $error")
                     }
                 )
