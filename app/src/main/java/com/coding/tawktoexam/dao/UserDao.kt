@@ -16,7 +16,7 @@ interface UserDao {
     @Query("SELECT * FROM tbl_user")
     fun getAllUser(): Flowable<List<UserEntity>>
 
-    @Query("SELECT * FROM tbl_user WHERE tbl_user.login_name LIKE :searchString||'%'")
+    @Query("SELECT * FROM tbl_user WHERE tbl_user.login_name LIKE :searchString||'%' OR tbl_user.note LIKE :searchString||'%'")
     fun searchUsers(searchString: String): Flowable<List<UserEntity>>
 
     @Query("SELECT * FROM tbl_user WHERE tbl_user.id = :id")

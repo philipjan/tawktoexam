@@ -10,7 +10,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 
 class MainActivityViewModel(application: Application) : BaseViewModel(application) {
 
@@ -106,21 +105,24 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
 
      fun searchUser(value: String) {
          Log.d(TAG, "searchUser VALUE: $value")
-        disposable.add(
-            db.userDao().searchUsers(value)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        searchUserLiveData.value = it
-                    },
-                    { throwable ->
-                        Log.e(TAG, "searchUser: $throwable")
-                    }
-                )
-
-        )
+         disposable.add(
+             db.userDao().getAllUser()
+                 .map { userList ->
+                     userList.filter {
+                         it.login.contains(value, true) || it.offLineNote.contains(value, true)
+                     }
+                 }
+                 .subscribeOn(Schedulers.computation())
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .subscribe(
+                     {
+                         searchUserLiveData.value = it
+                     },
+                     { throwable ->
+                         Log.e(TAG, "searchUser: $throwable")
+                     }
+                 )
+         )
     }
 
     override fun onCleared() {

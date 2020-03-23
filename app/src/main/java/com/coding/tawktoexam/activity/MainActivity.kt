@@ -71,7 +71,11 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        LOG(MainActivity::class.java, "onQueryTextSubmit: $query")
+        if (query.isNullOrBlank()) {
+            setDefaultList()
+        } else {
+            viewModel.searchUser(query)
+        }
         return true
     }
 
