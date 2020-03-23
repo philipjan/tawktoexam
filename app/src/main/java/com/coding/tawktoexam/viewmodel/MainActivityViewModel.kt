@@ -10,12 +10,14 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.koin.core.get
 
 class MainActivityViewModel(application: Application) : BaseViewModel(application) {
 
-    private val disposable = CompositeDisposable()
     private val TAG = "MainActivityViewModel"
-    private val adapter = UserAdapter()
+
+    private val disposable: CompositeDisposable = get()
+    private val adapter: UserAdapter = get()
 
     private val usersLiveData = MutableLiveData<List<UserEntity>>()
     private val searchUserLiveData = MutableLiveData<List<UserEntity>>()
@@ -25,7 +27,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
         getUserListDb()
     }
 
-    fun getAdapter() = adapter
+    fun getUserAdapter() = adapter
     fun getUsersLiveData() = usersLiveData
     fun getIndicatorStatus() = loadingIndicatorLiveData
     fun getSearchedList() = searchUserLiveData
@@ -34,7 +36,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     fun getUsers() {
         Log.d(TAG, "CURRENT INDEX: ${getLastIndex()}")
         disposable.add(
-            service.getUsers(getLastIndex().toString())
+            service.getGitHubService().getUsers(getLastIndex().toString())
                 .flatMap {
                     Observable.fromIterable(it)
                 }
@@ -55,14 +57,14 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                     },
                     {
                         loadingIndicatorLiveData.value = Utils.ERROR
-                        Log.e(TAG, "Throwable: $it")
+                        Log.e(TAG, "Throwable: getUsers $it")
                     }
                 )
         )
     }
 
     private fun getFullUserInfo(username: UserEntity): Observable<UserEntity> {
-        return service.getUserInfo(username.login)
+        return  service.getGitHubService().getUserInfo(username.login)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map {
@@ -72,7 +74,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
 
     private fun insertData(users: List<UserEntity>) {
         disposable.add(
-            db.userDao().insert(users)
+            persistenceHelper.getDb().userDao().insert(users)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -88,7 +90,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
 
     private fun getUserListDb() {
         disposable.add(
-            db.userDao().getAllUser()
+            persistenceHelper.getDb().userDao().getAllUser()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -106,7 +108,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
      fun searchUser(value: String) {
          Log.d(TAG, "searchUser VALUE: $value")
          disposable.add(
-             db.userDao().getAllUser()
+             persistenceHelper.getDb().userDao().getAllUser()
                  .map { userList ->
                      userList.filter {
                          it.login.contains(value, true) || it.offLineNote.contains(value, true)

@@ -38,14 +38,14 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.
     private fun initializeUserLiveData() {
         viewModel.getUsersLiveData().observe(this, Observer {
             userList ->
-            viewModel.getAdapter().updateList(userList.toMutableList())
+            viewModel.getUserAdapter().updateList(userList.toMutableList())
             if (userList.isNullOrEmpty()) {
                 viewModel.getUsers()
             }
         })
 
         viewModel.getSearchedList().observe(this, Observer {
-            viewModel.getAdapter().updateList(it.toMutableList())
+            viewModel.getUserAdapter().updateList(it.toMutableList())
         })
     }
 
@@ -92,13 +92,13 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.
     private fun initializeRecyclerView() {
         binder.userRecyclerView.apply {
             this.layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
-            this.adapter = viewModel.getAdapter()
+            this.adapter = viewModel.getUserAdapter()
         }
         binder.userRecyclerView.lastItemListener {
             viewModel.getUsers()
         }
 
-        viewModel.getAdapter().setClickListener {
+        viewModel.getUserAdapter().setClickListener {
             gotoProfile(it)
         }
     }
@@ -116,7 +116,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.
 
     private fun setDefaultList() {
         viewModel.getUsersLiveData().let {
-            viewModel.getAdapter().updateList(it.value!!.toMutableList())
+            viewModel.getUserAdapter().updateList(it.value!!.toMutableList())
         }
     }
 }

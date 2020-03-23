@@ -8,11 +8,13 @@ import com.coding.tawktoexam.utility.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.koin.core.get
 
-class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
+class ProfileViewModel(app: Application) : BaseViewModel(app) {
 
-    private val disposable = CompositeDisposable()
     private val TAG = "ProfileViewModel"
+
+    private val disposable : CompositeDisposable = get()
 
     private val LOADING_INDICATOR = MutableLiveData<Int>()
     private val userFullData = MutableLiveData<UserEntity>()
@@ -22,7 +24,7 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
 
     private fun getFullUserInfo(username: String) {
         disposable.add(
-            service.getUserInfo(username)
+            service.getGitHubService().getUserInfo(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { LOADING_INDICATOR.value = Utils.LOADING }
@@ -42,7 +44,7 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
 
      fun getUser(username: String) {
         disposable.add(
-            db.userDao().searchUserByUserName(username)
+            persistenceHelper.getDb().userDao().searchUserByUserName(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { LOADING_INDICATOR.value = Utils.LOADING }
@@ -66,7 +68,7 @@ class ProfileViewModel(app: Application) : BaseViewModel(application = app) {
 
      fun updateCurrentProfile(user: UserEntity) {
         disposable.add(
-            db.userDao().updateUser(user)
+            persistenceHelper.getDb().userDao().updateUser(user)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
