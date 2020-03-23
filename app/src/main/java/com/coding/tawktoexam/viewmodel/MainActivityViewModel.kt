@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class MainActivityViewModel(application: Application) : BaseViewModel(application) {
 
@@ -18,6 +19,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     private val adapter = UserAdapter()
 
     private val usersLiveData = MutableLiveData<List<UserEntity>>()
+    private val searchUserLiveData = MutableLiveData<List<UserEntity>>()
     private val loadingIndicatorLiveData = MutableLiveData<Int>()
 
     init {
@@ -27,6 +29,7 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
     fun getAdapter() = adapter
     fun getUsersLiveData() = usersLiveData
     fun getIndicatorStatus() = loadingIndicatorLiveData
+    fun getSearchedList() = searchUserLiveData
 
     // TODO: 20/03/2020 add some backoff multiplier for Retry
     fun getUsers() {
@@ -98,6 +101,25 @@ class MainActivityViewModel(application: Application) : BaseViewModel(applicatio
                         Log.e(TAG, "getUserListDb -> $error")
                     }
                 )
+        )
+    }
+
+     fun searchUser(value: String) {
+         Log.d(TAG, "searchUser VALUE: $value")
+        disposable.add(
+            db.userDao().searchUsers(value)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        searchUserLiveData.value = it
+                    },
+                    { throwable ->
+                        Log.e(TAG, "searchUser: $throwable")
+                    }
+                )
+
         )
     }
 

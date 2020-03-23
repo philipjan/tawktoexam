@@ -15,10 +15,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="searchView" parent="Widget.AppCompat.SearchView">
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="colorAccent">@color/white</item>
+    // toolbar theme to make SearchView Inside white
+    <style name="toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.coding.tawktoexam.activity
 
 import android.os.Bundle
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,7 @@ import com.coding.tawktoexam.utility.lastItemListener
 import com.coding.tawktoexam.viewmodel.AppViewModelFactory
 import com.coding.tawktoexam.viewmodel.MainActivityViewModel
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var vmFactory: AppViewModelFactory
@@ -27,6 +28,8 @@ class MainActivity : BaseActivity() {
         binder = DataBindingUtil.setContentView(this, R.layout.activity_main)
         vmFactory = AppViewModelFactory(application)
         viewModel = ViewModelProvider(this, vmFactory).get(MainActivityViewModel::class.java)
+        binder.searchView.setOnQueryTextListener(this)
+        binder.searchView.setOnCloseListener(this)
         initializeIndicatorStatus()
         initializeRecyclerView()
         initializeUserLiveData()
@@ -39,6 +42,10 @@ class MainActivity : BaseActivity() {
             if (userList.isNullOrEmpty()) {
                 viewModel.getUsers()
             }
+        })
+
+        viewModel.getSearchedList().observe(this, Observer {
+            viewModel.getAdapter().updateList(it.toMutableList())
         })
     }
 
@@ -56,6 +63,26 @@ class MainActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    override fun onClose(): Boolean {
+        setDefaultList()
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        LOG(MainActivity::class.java, "onQueryTextSubmit: $query")
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        LOG(MainActivity::class.java, "onQueryTextChange: $newText")
+        if (newText.isNullOrBlank()) {
+           setDefaultList()
+        } else {
+            viewModel.searchUser(newText)
+        }
+       return true
     }
 
     private fun initializeRecyclerView() {
@@ -81,5 +108,11 @@ class MainActivity : BaseActivity() {
             .replace(R.id.fragmentContainer, ProfileFragment.getInstance(user.login))
             .addToBackStack("profile")
             .commit()
+    }
+
+    private fun setDefaultList() {
+        viewModel.getUsersLiveData().let {
+            viewModel.getAdapter().updateList(it.value!!.toMutableList())
+        }
     }
 }
