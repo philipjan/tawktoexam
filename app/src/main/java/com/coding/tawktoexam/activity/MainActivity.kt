@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.coding.tawktoexam.R
 import com.coding.tawktoexam.databinding.ActivityMainBinding
 import com.coding.tawktoexam.entity.UserEntity
@@ -16,7 +17,7 @@ import com.coding.tawktoexam.utility.lastItemListener
 import com.coding.tawktoexam.viewmodel.AppViewModelFactory
 import com.coding.tawktoexam.viewmodel.MainActivityViewModel
 
-class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.OnCloseListener {
+class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.OnCloseListener, SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var vmFactory: AppViewModelFactory
@@ -30,6 +31,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.
         viewModel = ViewModelProvider(this, vmFactory).get(MainActivityViewModel::class.java)
         binder.searchView.setOnQueryTextListener(this)
         binder.searchView.setOnCloseListener(this)
+        binder.swipeRefreshLayout.setOnRefreshListener(this)
         initializeIndicatorStatus()
         initializeRecyclerView()
         initializeUserLiveData()
@@ -87,6 +89,10 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener, SearchView.
             viewModel.searchUser(newText)
         }
        return true
+    }
+
+    override fun onRefresh() {
+        viewModel.getUsers()
     }
 
     private fun initializeRecyclerView() {
