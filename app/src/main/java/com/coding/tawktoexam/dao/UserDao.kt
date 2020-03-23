@@ -22,7 +22,10 @@ interface UserDao {
     @Query("SELECT * FROM tbl_user WHERE tbl_user.id = :id")
     fun searchUser(id: Int): Flowable<UserEntity>
 
-    @Update(onConflict = OnConflictStrategy.ABORT)
+    @Query("SELECT * FROM tbl_user WHERE tbl_user.login_name LIKE :username")
+    fun searchUserByUserName(username: String): Flowable<UserEntity>
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateUser(user: UserEntity): Completable
 
     @Delete

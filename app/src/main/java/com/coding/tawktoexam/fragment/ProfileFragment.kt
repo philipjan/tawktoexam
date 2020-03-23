@@ -51,6 +51,14 @@ class ProfileFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LOG(ProfileFragment::class.java, "Username: ${arguments?.getString("usr", "null")}")
-        profileViewModel.getUser(arguments?.getString("usr", "null"))
+        val username = arguments?.getString("usr", "null")
+        username?.let {
+            setToolbarTitle(it)
+            profileViewModel.getUser(it)
+        }
+    }
+
+    private fun setToolbarTitle(username: String) {
+        profileBinder.profileToolbar.title = username
     }
 }
