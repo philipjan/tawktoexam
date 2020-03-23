@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.coding.tawktoexam.R
 import com.coding.tawktoexam.activity.MainActivity
 import com.coding.tawktoexam.databinding.FragmentProfileBinding
@@ -20,11 +21,12 @@ import com.coding.tawktoexam.viewmodel.ProfileViewModel
 /**
  * A simple [Fragment] subclass.
  */
-class ProfileFragment : BaseFragment() {
+class ProfileFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var vmFactory: AppViewModelFactory
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var profileBindingViewModel: ProfileBindingViewModel
+    private var username: String? = null
 
     companion object {
         var INSTANCE: ProfileFragment? = null
@@ -57,7 +59,8 @@ class ProfileFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LOG(ProfileFragment::class.java, "Username: ${arguments?.getString("usr", "null")}")
-        val username = arguments?.getString("usr", "null")
+        username = arguments?.getString("usr", "null")
+        initializeUIListeners()
         initializeLiveData()
         username?.let {
             setToolbarTitle(it)
@@ -65,11 +68,15 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
+    override fun onRefresh() {
+        username?.let { profileViewModel.getUser(it) }
+    }
+
     private fun setToolbarTitle(username: String) {
         profileBinder.profileToolbar.title = username
     }
 
-    private fun initializeUIListeners(currentValue: UserEntity) {
+    private fun initializeClickListeners(currentValue: UserEntity) {
         profileBinder.profileSave.setOnClickListener {
             var newValue = UserEntity(
                 login = currentValue.login,
@@ -117,7 +124,7 @@ class ProfileFragment : BaseFragment() {
         profileViewModel.getUserData().observe(viewLifecycleOwner, Observer {
             profileBindingViewModel.bind(it)
             profileBinder.viewModel = profileBindingViewModel
-            initializeUIListeners(it)
+            initializeClickListeners(it)
         })
 
         profileViewModel.getLoadingStatus().observe(viewLifecycleOwner, Observer {
@@ -133,4 +140,7 @@ class ProfileFragment : BaseFragment() {
         profileBinder.swipeRefreshLayoutProfile.isRefreshing = refreshing
     }
 
+    private fun initializeUIListeners() {
+        profileBinder.swipeRefreshLayoutProfile.setOnRefreshListener(this)
+    }
 }
