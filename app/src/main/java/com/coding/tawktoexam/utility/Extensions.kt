@@ -22,7 +22,6 @@ fun RecyclerView.lastItemListener(method: () -> Unit) {
 
 /**
  * this file contains reusable view extension functions.
- * @author xyldrun jacob
  * @see https://kotlinlang.org/docs/reference/extensions.html
  */
 

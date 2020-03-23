@@ -3,32 +3,28 @@ package com.coding.tawktoexam.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.coding.tawktoexam.R
+import com.coding.tawktoexam.databinding.ItemUserBinding
 import com.coding.tawktoexam.entity.UserEntity
 import com.coding.tawktoexam.utility.UserEntityUtil
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.item_user.view.*
+import com.coding.tawktoexam.viewmodel.ProfileBindingViewModel
 
 class UserAdapter: ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserEntityUtil()) {
 
     private var userList = mutableListOf<UserEntity>()
-    private var clickListener = { selected: UserEntity -> Unit}
+    private var clickListener = { selected: UserEntity -> Unit }
 
-    inner class UserViewHolder(val view: View): RecyclerView.ViewHolder(view.rootView), View.OnClickListener {
-        val profileImage = view.profileImage
-        val userName = view.userName
-        val userNote = view.userNote
+    inner class UserViewHolder(val view: ItemUserBinding): RecyclerView.ViewHolder(view.root), View.OnClickListener {
+
+        val binderViewModel = ProfileBindingViewModel()
 
         fun bind(user: UserEntity) {
-            view.setOnClickListener(this)
-            Picasso.get().load(user.avatarUrl)
-                .error(R.drawable.ic_user_head)
-                .resize(50, 50)
-                .into(profileImage)
-            userName.text = user.login
-            userNote.text = user.offLineNote
+            view.root.setOnClickListener(this)
+            binderViewModel.bind(user)
+            view.viewModel = binderViewModel
         }
 
         override fun onClick(v: View?) {
@@ -37,7 +33,13 @@ class UserAdapter: ListAdapter<UserEntity, UserAdapter.UserViewHolder>(UserEntit
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        return UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_user, parent, false))
+        return UserViewHolder(
+            DataBindingUtil.inflate(LayoutInflater.from(parent.context),
+                R.layout.item_user,
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {

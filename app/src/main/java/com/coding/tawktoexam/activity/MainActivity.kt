@@ -64,7 +64,6 @@ class MainActivity : BaseActivity() {
             this.adapter = viewModel.getAdapter()
         }
         binder.userRecyclerView.lastItemListener {
-            LOG(MainActivity::class.java, "Last Item Triggered!")
             viewModel.getUsers()
         }
 

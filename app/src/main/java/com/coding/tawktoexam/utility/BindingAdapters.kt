@@ -22,6 +22,22 @@ fun avatarProfile(view: ImageView, avatarUrl: MutableLiveData<String>?) {
     }
 }
 
+
+@BindingAdapter("profileResized")
+fun avatarProfileResized(view: ImageView, avatarUrl: MutableLiveData<String>?) {
+    val parentActivity: AppCompatActivity? = view.getParentActivity()
+    if (parentActivity != null && avatarUrl != null) {
+        avatarUrl.observe(parentActivity, Observer {
+            Picasso.get()
+                .load(it)
+                .resize(100, 100)
+                .centerInside()
+                .error(R.drawable.ic_user_head)
+                .into(view)
+        })
+    }
+}
+
 @BindingAdapter("mutableText")
 fun setMutableText(view: TextView, value: MutableLiveData<String>?) {
     val parentActivity: AppCompatActivity? = view.getParentActivity()
