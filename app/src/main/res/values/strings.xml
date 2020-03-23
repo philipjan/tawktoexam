@@ -11,4 +11,6 @@
     <string name="name">Name: %1$s</string>
     <string name="company">Company: %1$s</string>
     <string name="blog">Blog: %1$s</string>
+
+    <string name="save">Save</string>
 </resources>

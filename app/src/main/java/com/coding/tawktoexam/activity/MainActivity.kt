@@ -35,11 +35,9 @@ class MainActivity : BaseActivity() {
     private fun initializeUserLiveData() {
         viewModel.getUsersLiveData().observe(this, Observer {
             userList ->
-            showToast("Size: ${userList.size}")
             viewModel.getAdapter().updateList(userList.toMutableList())
             viewModel.addSampleNote()
             if (userList.isNullOrEmpty()) {
-                showToast("Getting Users")
                 viewModel.getUsers()
             }
         })
@@ -72,7 +70,6 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.getAdapter().setClickListener {
-//            showToast("Selected: ${it.login}")
             viewModel.setUser(it)
             gotoProfile(it)
         }

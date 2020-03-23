@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.coding.tawktoexam.viewmodel.ProfileBindingViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -53,13 +59,14 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    android:layout_margin="10dp"/>
+                    android:layout_margin="10dp"
+                    app:profile="@{viewModel.avatarUrl()}"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/profileFollowers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Followers: 121"
+                    app:mutableText="@{viewModel.followerCount()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/guidelineProfile"
                     app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +78,7 @@
                     android:id="@+id/profileFollowing"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Following: 666"
+                    app:mutableText="@{viewModel.followingCount()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/guidelineProfile"
@@ -100,7 +107,7 @@
                             android:id="@+id/profileFullName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="John Doe"
+                            app:mutableText="@{viewModel.fullName()}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
@@ -112,7 +119,7 @@
                             android:id="@+id/profileCompany"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Apple"
+                            app:mutableText="@{viewModel.company()}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
@@ -124,7 +131,7 @@
                             android:id="@+id/profileBlog"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="www.apple.com"
+                            app:mutableText="@{viewModel.blogUrl()}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
@@ -155,7 +162,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="top|start"
-                        android:inputType="textMultiLine"/>
+                        android:inputType="textMultiLine"
+                        app:mutableText="@{viewModel.offlineNote()}"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -163,7 +171,7 @@
                     android:id="@+id/profileSave"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Save"
+                    android:text="@string/save"
                     android:textAllCaps="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

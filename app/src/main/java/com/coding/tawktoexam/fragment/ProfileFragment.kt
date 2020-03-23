@@ -14,6 +14,7 @@ import com.coding.tawktoexam.databinding.FragmentProfileBinding
 import com.coding.tawktoexam.entity.UserEntity
 import com.coding.tawktoexam.utility.Utils
 import com.coding.tawktoexam.viewmodel.AppViewModelFactory
+import com.coding.tawktoexam.viewmodel.ProfileBindingViewModel
 import com.coding.tawktoexam.viewmodel.ProfileViewModel
 
 /**
@@ -23,6 +24,7 @@ class ProfileFragment : BaseFragment() {
 
     private lateinit var vmFactory: AppViewModelFactory
     private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var profileBindingViewModel: ProfileBindingViewModel
 
     companion object {
         var INSTANCE: ProfileFragment? = null
@@ -48,6 +50,7 @@ class ProfileFragment : BaseFragment() {
         profileBinder = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false )
         vmFactory = AppViewModelFactory((activity as MainActivity).application)
         profileViewModel = ViewModelProvider(this, vmFactory).get(ProfileViewModel::class.java)
+        profileBindingViewModel = ProfileBindingViewModel()
         return profileBinder.root
     }
 
@@ -112,9 +115,9 @@ class ProfileFragment : BaseFragment() {
 
     private fun initializeLiveData() {
         profileViewModel.getUserData().observe(viewLifecycleOwner, Observer {
-            profileBinder.profileNoteInputEditext.setText(it.offLineNote)
+            profileBindingViewModel.bind(it)
+            profileBinder.viewModel = profileBindingViewModel
             initializeUIListeners(it)
-            showToast(it.fullName)
         })
 
         profileViewModel.getLoadingStatus().observe(viewLifecycleOwner, Observer {
@@ -129,4 +132,5 @@ class ProfileFragment : BaseFragment() {
     private fun setRefreshing(refreshing: Boolean) {
         profileBinder.swipeRefreshLayoutProfile.isRefreshing = refreshing
     }
+
 }
